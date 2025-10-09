@@ -1,0 +1,124 @@
+/* ========== Skyler's Tools — Global Styles ========== */
+
+:root {
+  --bg: #f5f6fa;
+  --text: #2f3640;
+  --card-bg: #ffffff;
+  --accent1: #6a11cb;
+  --accent2: #2575fc;
+  --footer-bg: #dcdde1;
+  --shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  --radius: 10px;
+}
+
+/* ----- Reset / Base Styles ----- */
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  color: var(--text);
+  background: var(--bg);
+}
+
+/* ----- Layout Containers ----- */
+.wrap {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+/* ----- Header ----- */
+.site-header {
+  background: linear-gradient(135deg, var(--accent1), var(--accent2));
+  color: #fff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.site-header .wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem 1rem;
+  text-align: center;
+}
+
+.site-header h1 {
+  margin: 0;
+  font-size: 2.5rem;
+}
+
+.nav {
+  margin-top: 1rem;
+}
+
+.nav a {
+  color: #fff;
+  text-decoration: none;
+  margin: 0 1rem;
+  font-weight: 500;
+  transition: opacity 0.2s ease;
+}
+
+.nav a:hover,
+.nav a.active {
+  opacity: 0.8;
+  text-decoration: underline;
+}
+
+/* ----- Main Content ----- */
+main {
+  margin: 2rem auto;
+}
+
+.card {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.card h2 {
+  margin-top: 0;
+}
+
+/* ----- Lists / Links ----- */
+ul {
+  padding-left: 1.2rem;
+}
+
+a {
+  color: var(--accent1);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* ----- Footer ----- */
+.site-footer {
+  text-align: center;
+  background: var(--footer-bg);
+  font-size: 0.9rem;
+  color: #555;
+  padding: 1rem;
+}
+
+/* ----- Responsive ----- */
+@media (max-width: 600px) {
+  .site-header h1 {
+    font-size: 1.8rem;
+  }
+  .nav a {
+    display: block;
+    margin: 0.5rem 0;
+  }
+  .wrap {
+    padding: 1.5rem 1rem;
+  }
+}
