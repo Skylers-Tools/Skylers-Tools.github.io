@@ -1,11 +1,58 @@
-<header class="site-header">
+<header class="siteHeader">
   <div class="wrap">
-    <a href="/" class="brand">🔧 Skyler’s Tools</a>
-    <nav class="nav">
-      <a href="/">Home</a>
-      <a href="/tools/dice-roller.html">Dice Roller</a>
-      <a href="/tools/text-formatter.html">Text Formatter</a>
-      <a href="/tools/side-by-side.html">Side by Side</a>
+    <a href="/" class="brand">Skyler’s Tools</a>
+
+    <nav class="mainNav" aria-label="Primary">
+      <ul class="navList">
+        <li class="navItem">
+          <a class="navLink" href="/">Home</a>
+        </li>
+
+        <!-- Pages (dropdown) -->
+        <li class="navItem hasSubmenu">
+          <button class="navLink navToggle"
+                  aria-expanded="false"
+                  aria-controls="submenuPages"
+                  aria-haspopup="true">
+            Pages
+          </button>
+          <ul id="submenuPages" class="submenu" hidden>
+            <li><a class="submenuLink" href="#">Getting Started</a></li>
+            <li><a class="submenuLink" href="#">Patterns</a></li>
+            <li><a class="submenuLink" href="#">Components</a></li>
+          </ul>
+        </li>
+
+        <!-- Tools (dropdown) -->
+        <li class="navItem hasSubmenu">
+          <button class="navLink navToggle"
+                  aria-expanded="false"
+                  aria-controls="submenuTools"
+                  aria-haspopup="true">
+            Tools
+          </button>
+          <ul id="submenuTools" class="submenu" hidden>
+            <li><a class="submenuLink" href="#">Code Snippets</a></li>
+            <li><a class="submenuLink" href="#">Validators</a></li>
+            <li><a class="submenuLink" href="/pages/tools/endless-carousel.html">Endless Carousel</a></li>
+          </ul>
+        </li>
+
+        <!-- Designs (dropdown) -->
+        <li class="navItem hasSubmenu">
+          <button class="navLink navToggle"
+                  aria-expanded="false"
+                  aria-controls="submenuDesigns"
+                  aria-haspopup="true">
+            Designs
+          </button>
+          <ul id="submenuDesigns" class="submenu" hidden>
+            <li><a class="submenuLink" href="#">Templates</a></li>
+            <li><a class="submenuLink" href="#">Color Palettes</a></li>
+            <li><a class="submenuLink" href="#">Typography</a></li>
+          </ul>
+        </li>
+      </ul>
     </nav>
   </div>
 </header>
