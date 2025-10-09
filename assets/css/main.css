@@ -122,3 +122,120 @@ a:hover {
     padding: 1.5rem 1rem;
   }
 }
+
+/* ========== Header (camelCase aliases) ========== */
+/* Keep existing .site-header styles working, but also support .siteHeader */
+.site-header,
+.siteHeader {
+  background: linear-gradient(135deg, var(--accent1), var(--accent2));
+  color: #fff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.site-header .wrap,
+.siteHeader .wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem 1rem;
+  text-align: center;
+}
+
+/* Keep old .nav and add .mainNav as the modern target */
+.nav,
+.mainNav {
+  margin-top: 1rem;
+}
+
+/* Existing anchor styling remains; mirror it for .mainNav .navLink */
+.nav a {
+  color: #fff;
+  text-decoration: none;
+  margin: 0 1rem;
+  font-weight: 500;
+  transition: opacity 0.2s ease;
+}
+.nav a:hover,
+.nav a.active {
+  opacity: 0.8;
+  text-decoration: underline;
+}
+
+/* Mirror for camelCase links/buttons (anchors and buttons share .navLink) */
+.mainNav .navLink {
+  color: #fff;
+  text-decoration: none;
+  margin: 0 1rem;
+  font-weight: 500;
+  transition: opacity 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  background: none;
+  border: 0;
+  padding: .5rem .75rem;
+  cursor: pointer;
+}
+.mainNav .navLink:hover,
+.mainNav .navLink.active {
+  opacity: 0.8;
+  text-decoration: underline;
+}
+.mainNav .navLink:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
+/* ========== Dropdown structure (camelCase) ========== */
+.navList {
+  list-style: none;
+  display: flex;
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+}
+.navItem {
+  position: relative;
+}
+.hasSubmenu > .submenu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  min-width: 220px;
+  background: rgba(26, 26, 26, 0.98);
+  border: 1px solid #2a2a2a;
+  border-radius: .5rem;
+  padding: .5rem;
+  margin: .25rem 0 0 0;
+  list-style: none;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, .3);
+  z-index: 1000;
+}
+.submenu[hidden] {
+  display: none;
+}
+.submenuLink {
+  display: block;
+  padding: .5rem .75rem;
+  color: #fff;
+  text-decoration: none;
+  border-radius: .375rem;
+}
+.submenuLink:hover,
+.submenuLink:focus {
+  background: #2a2a2a;
+}
+
+/* Hover-to-open on devices that support hover */
+@media (hover: hover) and (pointer: fine) {
+  .hasSubmenu:hover > .submenu {
+    display: block;
+  }
+}
+
+/* ========== Responsive parity with your existing rules ========== */
+@media (max-width: 600px) {
+  .mainNav .navLink {
+    display: block;
+    margin: 0.5rem 0;
+  }
+}
