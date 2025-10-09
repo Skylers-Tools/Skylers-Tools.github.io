@@ -1,113 +1,47 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Skyler's Tools</title>
-  <link rel="icon" href="https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f527.svg">
-  <style>
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: #f5f6fa;
-      color: #2f3640;
-      margin: 0;
-      padding: 0;
-    }
-
-    header {
-      background: linear-gradient(135deg, #6a11cb, #2575fc);
-      color: white;
-      text-align: center;
-      padding: 2rem 1rem;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    }
-
-    header h1 {
-      margin: 0;
-      font-size: 2.5rem;
-    }
-
-    nav {
-      margin-top: 1rem;
-    }
-
-    nav a {
-      color: white;
-      text-decoration: none;
-      margin: 0 1rem;
-      font-weight: 500;
-      transition: opacity 0.2s ease;
-    }
-
-    nav a:hover {
-      opacity: 0.8;
-    }
-
-    main {
-      padding: 2rem;
-      max-width: 900px;
-      margin: 0 auto;
-    }
-
-    section {
-      margin-bottom: 2rem;
-      background: white;
-      padding: 1.5rem;
-      border-radius: 10px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-    }
-
-    footer {
-      text-align: center;
-      padding: 1rem;
-      background: #dcdde1;
-      font-size: 0.9rem;
-      color: #555;
-    }
-
-    @media (max-width: 600px) {
-      header h1 { font-size: 1.8rem; }
-      nav a { display: block; margin: 0.5rem 0; }
-    }
-  </style>
+  <meta name="description" content="A collection of personal projects, utilities, and web tools built for fun and productivity.">
+  <div data-include="/partials/head.html"></div>
 </head>
 <body>
-  <header>
-    <h1>🔧 Skyler's Tools</h1>
-    <nav>
-      <a href="#about">About</a>
-      <a href="#projects">Projects</a>
-      <a href="#contact">Contact</a>
-    </nav>
-  </header>
+  <!-- Global header -->
+  <div data-include="/partials/header.html"></div>
 
-  <main>
-    <section id="about">
+  <main class="wrap">
+    <section id="about" class="card">
       <h2>About</h2>
-      <p>Welcome to Skyler's Tools — a collection of personal projects, utilities, and web tools built for fun and productivity. This site will evolve as new ideas take shape!</p>
+      <p>
+        Welcome to <strong>Skyler's Tools</strong> — a collection of personal projects, utilities, and web tools built for fun and productivity.
+        This site will evolve as new ideas take shape!
+      </p>
     </section>
 
-    <section id="projects">
+    <section id="projects" class="card">
       <h2>Projects</h2>
       <ul>
-        <li><strong>Text Formatter:</strong> Quickly clean and style your text snippets.</li>
-        <li><strong>Dice Roller:</strong> A D&D-inspired tool for rolling dice online.</li>
-        <li><strong>Link Shortener:</strong> Simple and self-hosted URL shortener (coming soon!).</li>
+        <li><strong>Text Formatter:</strong> Quickly clean and style your text snippets. <a href="/tools/text-formatter.html">Try it →</a></li>
+        <li><strong>Dice Roller:</strong> A D&D-inspired tool for rolling dice online. <a href="/tools/dice-roller.html">Try it →</a></li>
+        <li><strong>Side-by-Side Tool:</strong> Compare two text blocks side-by-side. <a href="/pages/tools/side-by-side.html">Try it →</a></li>
+        <li><strong>Link Shortener:</strong> Simple self-hosted shortener (coming soon!).</li>
       </ul>
     </section>
 
-    <section id="contact">
+    <section id="contact" class="card">
       <h2>Contact</h2>
-      <p>Have feedback or want to collaborate? Reach out on <a href="https://github.com/Skylers-Tools" target="_blank">GitHub</a> or connect with me on social media.</p>
+      <p>
+        Have feedback or want to collaborate? Reach out on 
+        <a href="https://github.com/Skylers-Tools" target="_blank">GitHub</a> 
+        or connect with me on social media.
+      </p>
     </section>
   </main>
 
-  <footer>
-    <p>© <span id="year"></span> Skyler's Tools — Built with ❤️ using GitHub Pages</p>
-  </footer>
+  <!-- Global footer -->
+  <div data-include="/partials/footer.html"></div>
 
-  <script>
-    document.getElementById('year').textContent = new Date().getFullYear();
-  </script>
+  <!-- Include loader -->
+  <script src="/assets/js/include.js"></script>
 </body>
 </html>
