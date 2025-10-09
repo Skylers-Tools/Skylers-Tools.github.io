@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta data-include="/partials/head.html"></meta>
+  <style>
+    /* ===== Endless Carousel (scoped to .unique-carousel) =====
+       Shows 4 items at a time. Keep item count flexible.
+       If you need full responsiveness (e.g., 1–2–4 items at breakpoints),
+       see notes in the JS for how to adapt the visibleCount.
+    */
+
+    .unique-carousel {
+      width: 100%;
+      max-width: 800px; /* ensures exactly 4 items are visible with 25% basis */
+      margin: 2rem auto;
+      position: relative;
+    }
+
+    .unique-carousel__container {
+      width: 100%;
+      overflow: hidden;
+      position: relative;
+      display: block;
+      border: 1px solid var(--uc-border, #ddd);
+      border-radius: 8px;
+      background: var(--uc-bg, #fafafa);
+    }
+
+    .unique-carousel__track {
+      display: flex;
+      will-change: transform;
+      transform: translateX(0); /* start position */
+      transition: transform 500ms ease-in-out;
+    }
+
+    .unique-carousel__item {
+      /* 4 visible items => 25% each */
+      flex: 0 0 25%;
+      box-sizing: border-box;
+      padding: 12px;
+      text-align: center;
+    }
+
+    /* Simple demo style for items; feel free to theme */
+    .unique-carousel__item > .unique-card {
+      border: 2px solid #bbb;
+      background: #eee;
+      padding: 20px 0;
+      border-radius: 6px;
+      font-weight: 600;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    }
+
+    /* Optional: pause on hover (users can read without motion) */
+    .unique-carousel:hover .unique-carousel__track {
+      transition-timing-function: linear;
+    }
+
+    /* Respect users who prefer reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+      .unique-carousel__track {
+        transition: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Global header -->
+  <div data-include="/partials/header.html"></div>
+
+  <main class="wrap">
+    <!-- Body content -->
+    <section class="unique-carousel" aria-label="Endless Carousel of Items">
+      <div class="unique-carousel__container">
+        <div class="unique-carousel__track" aria-live="off">
+          <!-- Original items only; JS will clone the first N for seamless loop -->
+          <div class="unique-carousel__item"><div class="unique-card">1</div></div>
+          <div class="unique-carousel__item"><div class="unique-card">2</div></div>
+          <div class="unique-carousel__item"><div class="unique-card">3</div></div>
+          <div class="unique-carousel__item"><div class="unique-card">4</div></div>
+          <div class="unique-carousel__item"><div class="unique-card">5</div></div>
+          <div class="unique-carousel__item"><div class="unique-card">6</div></div>
+          <div class="unique-carousel__item"><div class="unique-card">7</div></div>
+          <div class="unique-carousel__item"><div class="unique-card">8</div></div>
+          <div class="unique-carousel__item"><div class="unique-card">9</div></div>
+          <div class="unique-carousel__item"><div class="unique-card">10</div></div>
+          <div class="unique-carousel__item"><div class="unique-card">11</div></div>
+        </div>
+      </div>
+
+      <!-- Optional helper text -->
+      <p style="text-align:center;margin-top:0.75rem;color:#666;font-size:0.95rem;">
+        Auto-scrolling, seamless loop. Hover to slow the perceived motion.
+      </p>
+    </section>
+  </main>
+
+  <div data-include="/partials/footer.html"></div>
+
+  <!-- Include loader -->
+  <script src="/assets/js/include.js"></script>
+  <!-- Main loader -->
+  <script src="/assets/js/main.js"></script>
+
+  <script>
+    // Endless Carousel Logic (vanilla JS)
+    // - Duplicates the first VISIBLE_COUNT items for a smooth wrap-around.
+    // - Translates by exact item widths to avoid sub-pixel drift.
+    // - Safe "jump back" without flicker once we pass the last real item.
+    // - If you later want full responsiveness (1/2/4 items), compute VISIBLE_COUNT dynamically
+    //   from CSS or breakpoints and re-run layout() on resize with debounce.
+
+    (function () {
+      const root = document.querySelector('.unique-carousel');
+      if (!root) return;
+
+      const track = root.querySelector('.unique-carousel__track');
+      const container = root.querySelector('.unique-carousel__container');
+
+      // CONFIG
+      const VISIBLE_COUNT = 4;               // must match the 25% basis in CSS
+      const STEP_MS = 1000;                  // advance every 1s
+      const TRANSITION_MS = 500;             // must match CSS transition duration
+      let currentIndex = 0;
+      let itemWidth = 0;
+      let allItems; // live list after cloning
+
+      // Duplicate the first VISIBLE_COUNT items for seamless looping
+      function cloneHeadItems() {
+        const initialItems = Array.from(track.querySelectorAll('.unique-carousel__item'));
+        const toClone = initialItems.slice(0, VISIBLE_COUNT).map(node => node.cloneNode(true));
+        toClone.forEach(clone => track.appendChild(clone));
+        allItems = track.querySelectorAll('.unique-carousel__item');
+      }
+
+      // Measure a single item (after layout) to get exact width, including borders
+      function measureItemWidth() {
+        const firstItem = track.querySelector('.unique-carousel__item');
+        if (!firstItem) return 0;
+        return firstItem.getBoundingClientRect().width;
+      }
+
+      function setTransform(px) {
+        track.style.transform = `translateX(-${px}px)`;
+      }
+
+      let intervalId = null;
+      let isResetting = false;
+
+      function step() {
+        if (isResetting) return;
+
+        currentIndex += 1;
+
+        // When we've revealed the last *cloned-start* item fully,
+        // jump back to the real start without the user seeing it.
+        const lastRealIndex = allItems.length - VISIBLE_COUNT; // index where clones begin
+        if (currentIndex > lastRealIndex) {
+          // Move to the cloned zone for the final animated step
+          setTransform(currentIndex * itemWidth);
+
+          // Schedule instant reset after the transition finishes
+          isResetting = true;
+          setTimeout(() => {
+            // Disable transition, jump back to zero
+            track.style.transition = 'none';
+            currentIndex = 0;
+            setTransform(0);
+
+            // Restore transition for the next moves
+            // Small delay lets the browser apply the 'no transition' transform
+            setTimeout(() => {
+              track.style.transition = `transform ${TRANSITION_MS}ms ease-in-out`;
+              isResetting = false;
+            }, 50);
+          }, TRANSITION_MS);
+        } else {
+          // Normal animated step
+          setTransform(currentIndex * itemWidth);
+        }
+      }
+
+      function start() {
+        stop();
+        intervalId = setInterval(step, STEP_MS);
+      }
+
+      function stop() {
+        if (intervalId) {
+          clearInterval(intervalId);
+          intervalId = null;
+        }
+      }
+
+      // If you need to handle resizes (e.g., responsive item counts),
+      // call layout() in a debounced resize handler and recompute itemWidth.
+      function layout() {
+        // Ensure transition is consistent
+        track.style.transition = `transform ${TRANSITION_MS}ms ease-in-out`;
+        itemWidth = measureItemWidth();
+        // Snap to current index using no transition to avoid jump
+        const prev = track.style.transition;
+        track.style.transition = 'none';
+        setTransform(currentIndex * itemWidth);
+        // restore
+        setTimeout(() => {
+          track.style.transition = prev;
+        }, 0);
+      }
+
+      // Init
+      cloneHeadItems();
+      // Wait for fonts/layout to settle
+      window.addEventListener('load', () => {
+        layout();
+        start();
+      });
+
+      // Pause on visibility change (saves cycles, avoids surprise jumps)
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden) stop();
+        else start();
+      });
+
+      // Optional: pause on hover
+      container.addEventListener('mouseenter', stop);
+      container.addEventListener('mouseleave', start);
+
+      // If you later want responsive visible counts, you can add:
+      // window.addEventListener('resize', debounce(() => { layout(); }, 150));
+    })();
+  </script>
+</body>
+</html>
