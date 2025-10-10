@@ -216,3 +216,36 @@ a:hover {
     padding: 1.5rem 1rem;
   }
 }
+
+/* =====================================
+   Component Instructional Guide Styles
+   ===================================== */
+
+.guide {
+  max-width: 960px;
+  margin: 3rem auto 4rem;
+}
+
+.guide h2 {
+  margin: 0 0 0.5rem;
+}
+
+.guide ol {
+  margin-left: 1.25rem;
+}
+
+.guide pre {
+  background: #111;
+  color: #e6e6e6;
+  border-radius: 10px;
+  padding: 14px;
+  overflow: auto;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.95rem;
+  line-height: 1.4;
+  margin: 0.5rem 0 1.25rem;
+}
+
+.guide code {
+  color: #e6e6e6;
+}
