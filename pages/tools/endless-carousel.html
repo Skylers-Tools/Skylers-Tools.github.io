@@ -2,56 +2,113 @@
 <html lang="en">
 <head>
   <meta data-include="/partials/head.html"></meta>
+
+  <title>Endless Carousel (Vanilla, Responsive, Self-Contained)</title>
+  <meta name="description" content="Drop-in endless carousel with responsive item counts, no dependencies, and on-page install guide.">
+
   <style>
-    /* ===== Endless Carousel (scoped to .unique-carousel) =====
-       Shows 4 items at a time. Keep item count flexible.
-       If you need full responsiveness (e.g., 1–2–4 items at breakpoints),
-       see notes in the JS for how to adapt the visibleCount.
-    */
+    /* ===============================
+       Endless Carousel (scoped)
+       - No external libs required
+       - Responsive 1/2/3/4 items
+       - Prefers-reduced-motion aware
+       =============================== */
 
     .unique-carousel {
+      --uc-bg: #fafafa;
+      --uc-border: #ddd;
+      --uc-radius: 12px;
+      --uc-gap: 12px;
+      --uc-item-bg: #eeeeee;
+      --uc-item-border: #bbbbbb;
+
       width: 100%;
-      max-width: 800px; /* ensures exactly 4 items are visible with 25% basis */
+      max-width: 960px;
       margin: 2rem auto;
       position: relative;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
     }
 
     .unique-carousel__container {
       width: 100%;
       overflow: hidden;
       position: relative;
-      display: block;
-      border: 1px solid var(--uc-border, #ddd);
-      border-radius: 8px;
-      background: var(--uc-bg, #fafafa);
+      border: 1px solid var(--uc-border);
+      border-radius: var(--uc-radius);
+      background: var(--uc-bg);
     }
 
     .unique-carousel__track {
       display: flex;
+      gap: var(--uc-gap);
       will-change: transform;
-      transform: translateX(0); /* start position */
+      transform: translateX(0);
       transition: transform 500ms ease-in-out;
+      padding: var(--uc-gap);
+      box-sizing: border-box;
     }
 
     .unique-carousel__item {
-      /* 4 visible items => 25% each */
-      flex: 0 0 25%;
+      /* Default: 4-up on large screens */
+      flex: 0 0 calc((100% - (var(--uc-gap) * 3)) / 4);
       box-sizing: border-box;
-      padding: 12px;
-      text-align: center;
     }
 
-    /* Simple demo style for items; feel free to theme */
-    .unique-carousel__item > .unique-card {
-      border: 2px solid #bbb;
-      background: #eee;
-      padding: 20px 0;
-      border-radius: 6px;
+    /* 3-up (≥ 992px down to 769px) */
+    @media (max-width: 992px) {
+      .unique-carousel__item {
+        flex-basis: calc((100% - (var(--uc-gap) * 2)) / 3);
+      }
+    }
+
+    /* 2-up (≤ 768px) */
+    @media (max-width: 768px) {
+      .unique-carousel__item {
+        flex-basis: calc((100% - var(--uc-gap)) / 2);
+      }
+    }
+
+    /* 1-up (≤ 576px) */
+    @media (max-width: 576px) {
+      .unique-carousel__item {
+        flex-basis: 100%;
+      }
+    }
+
+    /* Demo card look (safe to customize or replace) */
+    .unique-card {
+      border: 2px solid var(--uc-item-border);
+      background: var(--uc-item-bg);
+      border-radius: 8px;
+      padding: 24px 0;
       font-weight: 600;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      text-align: center;
+      user-select: none;
     }
 
-    /* Optional: pause on hover (users can read without motion) */
+    /* Controls */
+    .unique-carousel__controls {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .unique-btn {
+      appearance: none;
+      border: 1px solid var(--uc-border);
+      background: #fff;
+      border-radius: 8px;
+      padding: 8px 12px;
+      line-height: 1;
+      cursor: pointer;
+    }
+    .unique-btn:focus-visible {
+      outline: 2px solid #0d6efd;
+      outline-offset: 2px;
+    }
+
+    /* Hover: slow perceived motion by pausing interval (handled in JS).
+       We keep this CSS rule to maintain smooth timing when hovered. */
     .unique-carousel:hover .unique-carousel__track {
       transition-timing-function: linear;
     }
@@ -62,6 +119,39 @@
         transition: none !important;
       }
     }
+
+    /* Install guide styling (just for this page) */
+    .guide {
+      max-width: 960px;
+      margin: 3rem auto 4rem;
+    }
+    .guide h2 { margin: 0 0 0.5rem; }
+    .guide ol { margin-left: 1.25rem; }
+    .codeblock {
+      position: relative;
+      background: #111;
+      color: #e6e6e6;
+      border-radius: 10px;
+      padding: 14px 14px 12px;
+      overflow: auto;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 0.95rem;
+      line-height: 1.4;
+      margin: 0.5rem 0 1.25rem;
+    }
+    .copy-btn {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      border: 1px solid #444;
+      background: #222;
+      color: #e6e6e6;
+      padding: 4px 8px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.85rem;
+    }
+    .copy-btn:focus-visible { outline: 2px solid #0d6efd; outline-offset: 2px; }
   </style>
 </head>
 <body>
@@ -69,11 +159,18 @@
   <div data-include="/partials/header.html"></div>
 
   <main class="wrap">
-    <!-- Body content -->
-    <section class="unique-carousel" aria-label="Endless Carousel of Items">
+    <!-- ======================
+         LIVE DEMO CAROUSEL
+         ====================== -->
+    <section class="unique-carousel"
+             aria-label="Endless Carousel of Items"
+             data-interval="1200"        <!-- ms between moves (default 1200) -->
+             data-transition="500"       <!-- ms animation (must match CSS transition) -->
+             data-pause-on-hover="true"  <!-- hover pauses autoplay -->
+             data-start-paused="false">  <!-- start in paused state -->
       <div class="unique-carousel__container">
         <div class="unique-carousel__track" aria-live="off">
-          <!-- Original items only; JS will clone the first N for seamless loop -->
+          <!-- Original items only; JS will clone the first N visible for seamless loop -->
           <div class="unique-carousel__item"><div class="unique-card">1</div></div>
           <div class="unique-carousel__item"><div class="unique-card">2</div></div>
           <div class="unique-carousel__item"><div class="unique-card">3</div></div>
@@ -88,10 +185,238 @@
         </div>
       </div>
 
-      <!-- Optional helper text -->
+      <div class="unique-carousel__controls" aria-controls="carousel-controls">
+        <button type="button" class="unique-btn js-uc-toggle" aria-pressed="false" aria-label="Pause auto-scrolling">Pause</button>
+      </div>
+
       <p style="text-align:center;margin-top:0.75rem;color:#666;font-size:0.95rem;">
-        Auto-scrolling, seamless loop. Hover to slow the perceived motion.
+        Auto-scrolling, seamless loop. Hover or press “Pause” to stop motion.
       </p>
+    </section>
+
+    <!-- ======================
+         INSTALLATION GUIDE
+         ====================== -->
+    <section class="guide" aria-labelledby="guide-title">
+      <h2 id="guide-title">How to Install This Carousel</h2>
+      <ol>
+        <li><strong>Copy the HTML structure</strong> (items can be anything—logos, cards, links). Keep only your original items; the JS will append clones automatically.</li>
+        <div class="codeblock" id="snippet-html">
+          <button class="copy-btn" data-copy="#snippet-html">Copy</button>
+<pre>&lt;section class="unique-carousel" aria-label="Endless Carousel" data-interval="1200" data-transition="500" data-pause-on-hover="true"&gt;
+  &lt;div class="unique-carousel__container"&gt;
+    &lt;div class="unique-carousel__track" aria-live="off"&gt;
+      &lt;div class="unique-carousel__item"&gt;&lt;div class="unique-card"&gt;Item 1&lt;/div&gt;&lt;/div&gt;
+      &lt;div class="unique-carousel__item"&gt;&lt;div class="unique-card"&gt;Item 2&lt;/div&gt;&lt;/div&gt;
+      &lt;!-- ...add as many as you like (5+ recommended) --&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+  &lt;div class="unique-carousel__controls"&gt;
+    &lt;button type="button" class="unique-btn js-uc-toggle" aria-pressed="false"&gt;Pause&lt;/button&gt;
+  &lt;/div&gt;
+&lt;/section&gt;</pre>
+        </div>
+
+        <li><strong>Copy the CSS</strong> (scoped to <code>.unique-carousel</code> so it won’t fight Bootstrap). You can tweak gaps, borders, and breakpoints safely.</li>
+        <div class="codeblock" id="snippet-css">
+          <button class="copy-btn" data-copy="#snippet-css">Copy</button>
+<pre>/* Scoped carousel styles */
+.unique-carousel { --uc-gap: 12px; --uc-border: #ddd; --uc-radius: 12px; --uc-bg: #fafafa; }
+.unique-carousel__container { overflow: hidden; border: 1px solid var(--uc-border); border-radius: var(--uc-radius); background: var(--uc-bg); }
+.unique-carousel__track { display: flex; gap: var(--uc-gap); padding: var(--uc-gap); transition: transform 500ms ease-in-out; will-change: transform; }
+.unique-carousel__item { flex: 0 0 calc((100% - (var(--uc-gap) * 3)) / 4); }
+@media (max-width: 992px){ .unique-carousel__item { flex-basis: calc((100% - (var(--uc-gap) * 2)) / 3); } }
+@media (max-width: 768px){ .unique-carousel__item { flex-basis: calc((100% - var(--uc-gap)) / 2); } }
+@media (max-width: 576px){ .unique-carousel__item { flex-basis: 100%; } }</pre>
+        </div>
+
+        <li><strong>Copy the JavaScript</strong> (vanilla; handles cloning, autoplay, resize, play/pause, and reduced motion). Place it near the end of your page.</li>
+        <div class="codeblock" id="snippet-js">
+          <button class="copy-btn" data-copy="#snippet-js">Copy</button>
+<pre>(function(){
+  const root = document.querySelector('.unique-carousel');
+  if(!root) return;
+
+  const track = root.querySelector('.unique-carousel__track');
+  const container = root.querySelector('.unique-carousel__container');
+  const toggleBtn = root.querySelector('.js-uc-toggle');
+
+  const STEP_MS = Number(root.dataset.interval) || 1200;
+  const TRANSITION_MS = Number(root.dataset.transition) || 500;
+  const PAUSE_ON_HOVER = root.dataset.pauseOnHover !== 'false';
+  const START_PAUSED = root.dataset.startPaused === 'true';
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  let currentIndex = 0;
+  let itemWidth = 0;
+  let visibleCount = 1;
+  let intervalId = null;
+  let isResetting = false;
+
+  // Mark original items for reliable recloning on resize
+  const originals = Array.from(track.children).map(el => { el.dataset.original = '1'; return el; });
+
+  function measureItemWidth(){
+    const first = track.querySelector('.unique-carousel__item');
+    return first ? first.getBoundingClientRect().width : 0;
+  }
+
+  function computeVisibleCount(){
+    const w = container.clientWidth;
+    const iw = itemWidth || measureItemWidth();
+    if(!iw) return 1;
+    const raw = Math.max(1, Math.round(w / iw));
+    // Clamp between 1 and originals.length
+    return Math.max(1, Math.min(raw, originals.length));
+  }
+
+  function setTransform(px){ track.style.transform = 'translateX(-'+px+'px)'; }
+
+  function ensureClones(count){
+    // Remove existing clones
+    Array.from(track.querySelectorAll('[data-clone="1"]')).forEach(n => n.remove());
+    // Clone first 'count' originals
+    const toClone = originals.slice(0, count).map(n => {
+      const c = n.cloneNode(true);
+      c.dataset.clone = '1';
+      return c;
+    });
+    toClone.forEach(c => track.appendChild(c));
+  }
+
+  function totalItems(){ return track.children.length; }
+
+  function lastRealIndex(){ return totalItems() - visibleCount; }
+
+  function step(){
+    if(isResetting) return;
+    currentIndex += 1;
+
+    if(currentIndex > lastRealIndex()){
+      // Animate into clone zone
+      setTransform(currentIndex * itemWidth);
+
+      isResetting = true;
+      setTimeout(() => {
+        // Instant jump back to 0 without flicker
+        const prev = track.style.transition;
+        track.style.transition = 'none';
+        currentIndex = 0;
+        setTransform(0);
+        // Restore transition
+        requestAnimationFrame(() => {
+          track.style.transition = 'transform '+TRANSITION_MS+'ms ease-in-out';
+          isResetting = false;
+        });
+      }, TRANSITION_MS);
+    } else {
+      setTransform(currentIndex * itemWidth);
+    }
+  }
+
+  function start(){
+    stop();
+    if(reduceMotion) return; // honor user setting
+    intervalId = setInterval(step, STEP_MS);
+    if(toggleBtn){
+      toggleBtn.setAttribute('aria-pressed','false');
+      toggleBtn.textContent = 'Pause';
+      toggleBtn.setAttribute('aria-label','Pause auto-scrolling');
+    }
+  }
+
+  function stop(){
+    if(intervalId){ clearInterval(intervalId); intervalId = null; }
+    if(toggleBtn){
+      toggleBtn.setAttribute('aria-pressed','true');
+      toggleBtn.textContent = 'Play';
+      toggleBtn.setAttribute('aria-label','Resume auto-scrolling');
+    }
+  }
+
+  function layout(){
+    // Keep transition consistent with config
+    track.style.transition = 'transform '+TRANSITION_MS+'ms ease-in-out';
+
+    // Measure after layout
+    itemWidth = measureItemWidth();
+
+    // Recompute visible count and refresh clones
+    const newVisible = computeVisibleCount();
+    if(newVisible !== visibleCount){
+      visibleCount = newVisible;
+      ensureClones(visibleCount);
+    } else if(!track.querySelector('[data-clone="1"]')) {
+      // First run: ensure clones exist
+      ensureClones(visibleCount);
+    }
+
+    // Snap to current index without animation
+    const prev = track.style.transition;
+    track.style.transition = 'none';
+    setTransform(currentIndex * itemWidth);
+    // Restore transition on next frame
+    requestAnimationFrame(() => { track.style.transition = prev; });
+  }
+
+  // Debounce helper
+  function debounce(fn, ms){
+    let t; return (...args) => { clearTimeout(t); t = setTimeout(() => fn.apply(null,args), ms); };
+  }
+
+  // Init after fonts & layout settle
+  window.addEventListener('load', () => {
+    layout();
+    visibleCount = computeVisibleCount();
+    ensureClones(visibleCount);
+    if(START_PAUSED) stop(); else start();
+  });
+
+  // Hover pause/resume
+  if(PAUSE_ON_HOVER){
+    container.addEventListener('mouseenter', stop);
+    container.addEventListener('mouseleave', start);
+  }
+
+  // Toggle button (Play/Pause)
+  if(toggleBtn){
+    toggleBtn.addEventListener('click', () => {
+      if(intervalId) stop(); else start();
+    });
+  }
+
+  // Visibility pause (saves cycles, avoids jumps)
+  document.addEventListener('visibilitychange', () => {
+    if(document.hidden) stop(); else start();
+  });
+
+  // Responsive relayout
+  window.addEventListener('resize', debounce(() => {
+    const prevV = visibleCount;
+    layout();
+    // If visibleCount changed, keep currentIndex sane
+    if(visibleCount !== prevV){
+      currentIndex = currentIndex % originals.length;
+      const prev = track.style.transition;
+      track.style.transition = 'none';
+      setTransform(currentIndex * itemWidth);
+      requestAnimationFrame(() => { track.style.transition = prev; });
+    }
+  }, 150));
+})();</pre>
+        </div>
+
+        <li><strong>Optional: change behavior via data attributes</strong> on <code>.unique-carousel</code>:
+          <ul>
+            <li><code>data-interval</code> — milliseconds between moves (default <code>1200</code>).</li>
+            <li><code>data-transition</code> — animation ms (must match CSS transition, default <code>500</code>).</li>
+            <li><code>data-pause-on-hover</code> — <code>true</code> or <code>false</code> (default <code>true</code>).</li>
+            <li><code>data-start-paused</code> — <code>true</code> starts stopped for demos/reviews.</li>
+          </ul>
+        </li>
+
+        <li><strong>Swap the demo cards</strong> for your real content (logos, links, images). The component doesn’t rely on Bootstrap grids or utilities, so it will behave the same anywhere.</li>
+      </ol>
     </section>
   </main>
 
@@ -102,132 +427,155 @@
   <!-- Main loader -->
   <script src="/assets/js/main.js"></script>
 
+  <!-- Carousel logic for THIS page (already included in the copy block above). 
+       Keeping it inline here so this page works standalone. -->
   <script>
-    // Endless Carousel Logic (vanilla JS)
-    // - Duplicates the first VISIBLE_COUNT items for a smooth wrap-around.
-    // - Translates by exact item widths to avoid sub-pixel drift.
-    // - Safe "jump back" without flicker once we pass the last real item.
-    // - If you later want full responsiveness (1/2/4 items), compute VISIBLE_COUNT dynamically
-    //   from CSS or breakpoints and re-run layout() on resize with debounce.
-
-    (function () {
+    /* ==== Live demo bootstrapper (same code as in the JS snippet) ==== */
+    (function(){
       const root = document.querySelector('.unique-carousel');
-      if (!root) return;
+      if(!root) return;
 
       const track = root.querySelector('.unique-carousel__track');
       const container = root.querySelector('.unique-carousel__container');
+      const toggleBtn = root.querySelector('.js-uc-toggle');
 
-      // CONFIG
-      const VISIBLE_COUNT = 4;               // must match the 25% basis in CSS
-      const STEP_MS = 1000;                  // advance every 1s
-      const TRANSITION_MS = 500;             // must match CSS transition duration
+      const STEP_MS = Number(root.dataset.interval) || 1200;
+      const TRANSITION_MS = Number(root.dataset.transition) || 500;
+      const PAUSE_ON_HOVER = root.dataset.pauseOnHover !== 'false';
+      const START_PAUSED = root.dataset.startPaused === 'true';
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
       let currentIndex = 0;
       let itemWidth = 0;
-      let allItems; // live list after cloning
-
-      // Duplicate the first VISIBLE_COUNT items for seamless looping
-      function cloneHeadItems() {
-        const initialItems = Array.from(track.querySelectorAll('.unique-carousel__item'));
-        const toClone = initialItems.slice(0, VISIBLE_COUNT).map(node => node.cloneNode(true));
-        toClone.forEach(clone => track.appendChild(clone));
-        allItems = track.querySelectorAll('.unique-carousel__item');
-      }
-
-      // Measure a single item (after layout) to get exact width, including borders
-      function measureItemWidth() {
-        const firstItem = track.querySelector('.unique-carousel__item');
-        if (!firstItem) return 0;
-        return firstItem.getBoundingClientRect().width;
-      }
-
-      function setTransform(px) {
-        track.style.transform = `translateX(-${px}px)`;
-      }
-
+      let visibleCount = 1;
       let intervalId = null;
       let isResetting = false;
 
-      function step() {
-        if (isResetting) return;
+      const originals = Array.from(track.children).map(el => { el.dataset.original = '1'; return el; });
 
+      function measureItemWidth(){
+        const first = track.querySelector('.unique-carousel__item');
+        return first ? first.getBoundingClientRect().width : 0;
+      }
+      function computeVisibleCount(){
+        const w = container.clientWidth;
+        const iw = itemWidth || measureItemWidth();
+        if(!iw) return 1;
+        const raw = Math.max(1, Math.round(w / iw));
+        return Math.max(1, Math.min(raw, originals.length));
+      }
+      function setTransform(px){ track.style.transform = 'translateX(-'+px+'px)'; }
+      function ensureClones(count){
+        Array.from(track.querySelectorAll('[data-clone="1"]')).forEach(n => n.remove());
+        const toClone = originals.slice(0, count).map(n => {
+          const c = n.cloneNode(true);
+          c.dataset.clone = '1';
+          return c;
+        });
+        toClone.forEach(c => track.appendChild(c));
+      }
+      function totalItems(){ return track.children.length; }
+      function lastRealIndex(){ return totalItems() - visibleCount; }
+
+      function step(){
+        if(isResetting) return;
         currentIndex += 1;
-
-        // When we've revealed the last *cloned-start* item fully,
-        // jump back to the real start without the user seeing it.
-        const lastRealIndex = allItems.length - VISIBLE_COUNT; // index where clones begin
-        if (currentIndex > lastRealIndex) {
-          // Move to the cloned zone for the final animated step
+        if(currentIndex > lastRealIndex()){
           setTransform(currentIndex * itemWidth);
-
-          // Schedule instant reset after the transition finishes
           isResetting = true;
           setTimeout(() => {
-            // Disable transition, jump back to zero
+            const prev = track.style.transition;
             track.style.transition = 'none';
             currentIndex = 0;
             setTransform(0);
-
-            // Restore transition for the next moves
-            // Small delay lets the browser apply the 'no transition' transform
-            setTimeout(() => {
-              track.style.transition = `transform ${TRANSITION_MS}ms ease-in-out`;
+            requestAnimationFrame(() => {
+              track.style.transition = 'transform '+TRANSITION_MS+'ms ease-in-out';
               isResetting = false;
-            }, 50);
+            });
           }, TRANSITION_MS);
         } else {
-          // Normal animated step
           setTransform(currentIndex * itemWidth);
         }
       }
-
-      function start() {
+      function start(){
         stop();
+        if(reduceMotion) return;
         intervalId = setInterval(step, STEP_MS);
-      }
-
-      function stop() {
-        if (intervalId) {
-          clearInterval(intervalId);
-          intervalId = null;
+        if(toggleBtn){
+          toggleBtn.setAttribute('aria-pressed','false');
+          toggleBtn.textContent = 'Pause';
+          toggleBtn.setAttribute('aria-label','Pause auto-scrolling');
         }
       }
-
-      // If you need to handle resizes (e.g., responsive item counts),
-      // call layout() in a debounced resize handler and recompute itemWidth.
-      function layout() {
-        // Ensure transition is consistent
-        track.style.transition = `transform ${TRANSITION_MS}ms ease-in-out`;
+      function stop(){
+        if(intervalId){ clearInterval(intervalId); intervalId = null; }
+        if(toggleBtn){
+          toggleBtn.setAttribute('aria-pressed','true');
+          toggleBtn.textContent = 'Play';
+          toggleBtn.setAttribute('aria-label','Resume auto-scrolling');
+        }
+      }
+      function layout(){
+        track.style.transition = 'transform '+TRANSITION_MS+'ms ease-in-out';
         itemWidth = measureItemWidth();
-        // Snap to current index using no transition to avoid jump
+        const newVisible = computeVisibleCount();
+        if(newVisible !== visibleCount){
+          visibleCount = newVisible;
+          ensureClones(visibleCount);
+        } else if(!track.querySelector('[data-clone="1"]')) {
+          ensureClones(visibleCount);
+        }
         const prev = track.style.transition;
         track.style.transition = 'none';
         setTransform(currentIndex * itemWidth);
-        // restore
-        setTimeout(() => {
-          track.style.transition = prev;
-        }, 0);
+        requestAnimationFrame(() => { track.style.transition = prev; });
       }
+      function debounce(fn, ms){ let t; return (...a)=>{ clearTimeout(t); t=setTimeout(()=>fn.apply(null,a),ms); }; }
 
-      // Init
-      cloneHeadItems();
-      // Wait for fonts/layout to settle
       window.addEventListener('load', () => {
         layout();
-        start();
+        visibleCount = computeVisibleCount();
+        ensureClones(visibleCount);
+        if(START_PAUSED) stop(); else start();
       });
 
-      // Pause on visibility change (saves cycles, avoids surprise jumps)
-      document.addEventListener('visibilitychange', () => {
-        if (document.hidden) stop();
-        else start();
+      if(PAUSE_ON_HOVER){
+        container.addEventListener('mouseenter', stop);
+        container.addEventListener('mouseleave', start);
+      }
+      if(toggleBtn){
+        toggleBtn.addEventListener('click', () => { if(intervalId) stop(); else start(); });
+      }
+      document.addEventListener('visibilitychange', () => { if(document.hidden) stop(); else start(); });
+      window.addEventListener('resize', debounce(() => {
+        const prevV = visibleCount;
+        layout();
+        if(visibleCount !== prevV){
+          currentIndex = currentIndex % originals.length;
+          const prev = track.style.transition;
+          track.style.transition = 'none';
+          setTransform(currentIndex * itemWidth);
+          requestAnimationFrame(() => { track.style.transition = prev; });
+        }
+      }, 150));
+    })();
+
+    /* === Tiny helper: "Copy" buttons for code blocks in the guide === */
+    (function(){
+      function copy(sel){
+        const block = document.querySelector(sel);
+        if(!block) return;
+        const text = block.querySelector('pre')?.innerText || '';
+        navigator.clipboard.writeText(text);
+      }
+      document.addEventListener('click', (e) => {
+        const btn = e.target.closest('[data-copy]');
+        if(!btn) return;
+        e.preventDefault();
+        copy(btn.getAttribute('data-copy'));
+        btn.textContent = 'Copied';
+        setTimeout(()=> btn.textContent = 'Copy', 1200);
       });
-
-      // Optional: pause on hover
-      container.addEventListener('mouseenter', stop);
-      container.addEventListener('mouseleave', start);
-
-      // If you later want responsive visible counts, you can add:
-      // window.addEventListener('resize', debounce(() => { layout(); }, 150));
     })();
   </script>
 </body>
