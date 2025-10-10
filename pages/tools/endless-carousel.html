@@ -2,83 +2,43 @@
 <html lang="en">
 <head>
   <meta data-include="/partials/head.html"></meta>
-
-  <title>Endless Carousel (Vanilla, Responsive, Self-Contained)</title>
-  <meta name="description" content="Drop-in endless carousel with responsive item counts, no dependencies, and on-page install guide.">
-
+  <title>Endless Carousel — Simple, Data-Attribute-Free</title>
+  <meta name="description" content="Endless carousel with no data-attributes and a script-free instructions section.">
+  <!-- Include loader -->
+  <script src="/assets/js/include.js"></script>
   <style>
-    /* ===============================
-       Endless Carousel (scoped)
-       - No external libs required
-       - Responsive 1/2/3/4 items
-       - Prefers-reduced-motion aware
-       =============================== */
-
-    .unique-carousel {
-      --uc-bg: #fafafa;
-      --uc-border: #ddd;
-      --uc-radius: 12px;
-      --uc-gap: 12px;
-      --uc-item-bg: #eeeeee;
-      --uc-item-border: #bbbbbb;
-
-      width: 100%;
-      max-width: 960px;
-      margin: 2rem auto;
-      position: relative;
+    /* ===== Carousel (scoped, no external deps, no data-attrs) ===== */
+    .uc { 
+      width: 100%; 
+      max-width: 960px; 
+      margin: 2rem auto; 
+      position: relative; 
       font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
     }
-
-    .unique-carousel__container {
-      width: 100%;
+    .uc__container {
       overflow: hidden;
-      position: relative;
-      border: 1px solid var(--uc-border);
-      border-radius: var(--uc-radius);
-      background: var(--uc-bg);
+      border: 1px solid #ddd;
+      border-radius: 12px;
+      background: #fafafa;
     }
-
-    .unique-carousel__track {
+    .uc__track {
       display: flex;
-      gap: var(--uc-gap);
+      gap: 12px;
+      padding: 12px;
       will-change: transform;
       transform: translateX(0);
       transition: transform 500ms ease-in-out;
-      padding: var(--uc-gap);
       box-sizing: border-box;
     }
+    .uc__item { flex: 0 0 calc((100% - (12px * 3)) / 4); box-sizing: border-box; }
+    @media (max-width: 992px){ .uc__item { flex-basis: calc((100% - (12px * 2)) / 3); } }
+    @media (max-width: 768px){ .uc__item { flex-basis: calc((100% - 12px) / 2); } }
+    @media (max-width: 576px){ .uc__item { flex-basis: 100%; } }
 
-    .unique-carousel__item {
-      /* Default: 4-up on large screens */
-      flex: 0 0 calc((100% - (var(--uc-gap) * 3)) / 4);
-      box-sizing: border-box;
-    }
-
-    /* 3-up (≥ 992px down to 769px) */
-    @media (max-width: 992px) {
-      .unique-carousel__item {
-        flex-basis: calc((100% - (var(--uc-gap) * 2)) / 3);
-      }
-    }
-
-    /* 2-up (≤ 768px) */
-    @media (max-width: 768px) {
-      .unique-carousel__item {
-        flex-basis: calc((100% - var(--uc-gap)) / 2);
-      }
-    }
-
-    /* 1-up (≤ 576px) */
-    @media (max-width: 576px) {
-      .unique-carousel__item {
-        flex-basis: 100%;
-      }
-    }
-
-    /* Demo card look (safe to customize or replace) */
-    .unique-card {
-      border: 2px solid var(--uc-item-border);
-      background: var(--uc-item-bg);
+    /* Demo card look (replace as needed) */
+    .uc-card {
+      border: 2px solid #bbb;
+      background: #eee;
       border-radius: 8px;
       padding: 24px 0;
       font-weight: 600;
@@ -86,72 +46,40 @@
       user-select: none;
     }
 
-    /* Controls */
-    .unique-carousel__controls {
-      display: flex;
-      justify-content: flex-end;
-      gap: 8px;
-      margin-top: 8px;
+    /* Controls (simple button; no data-attrs) */
+    .uc__controls { display: flex; justify-content: flex-end; gap: 8px; margin-top: 8px; }
+    .uc-btn { 
+      appearance: none; 
+      border: 1px solid #ddd; 
+      background: #fff; 
+      border-radius: 8px; 
+      padding: 8px 12px; 
+      line-height: 1; 
+      cursor: pointer; 
     }
-    .unique-btn {
-      appearance: none;
-      border: 1px solid var(--uc-border);
-      background: #fff;
-      border-radius: 8px;
-      padding: 8px 12px;
-      line-height: 1;
-      cursor: pointer;
-    }
-    .unique-btn:focus-visible {
-      outline: 2px solid #0d6efd;
-      outline-offset: 2px;
-    }
+    .uc-btn:focus-visible { outline: 2px solid #0d6efd; outline-offset: 2px; }
 
-    /* Hover: slow perceived motion by pausing interval (handled in JS).
-       We keep this CSS rule to maintain smooth timing when hovered. */
-    .unique-carousel:hover .unique-carousel__track {
-      transition-timing-function: linear;
-    }
-
-    /* Respect users who prefer reduced motion */
+    /* Prefer-reduced-motion: disable autoplay */
     @media (prefers-reduced-motion: reduce) {
-      .unique-carousel__track {
-        transition: none !important;
-      }
+      .uc__track { transition: none !important; }
     }
 
-    /* Install guide styling (just for this page) */
-    .guide {
-      max-width: 960px;
-      margin: 3rem auto 4rem;
-    }
+    /* ===== Instruction section (no scripts, no data-attrs) ===== */
+    .guide { max-width: 960px; margin: 3rem auto 4rem; }
     .guide h2 { margin: 0 0 0.5rem; }
     .guide ol { margin-left: 1.25rem; }
-    .codeblock {
-      position: relative;
-      background: #111;
-      color: #e6e6e6;
-      border-radius: 10px;
-      padding: 14px 14px 12px;
-      overflow: auto;
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-      font-size: 0.95rem;
-      line-height: 1.4;
+    .guide pre { 
+      background: #111; 
+      color: #e6e6e6; 
+      border-radius: 10px; 
+      padding: 14px; 
+      overflow: auto; 
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; 
+      font-size: 0.95rem; 
+      line-height: 1.4; 
       margin: 0.5rem 0 1.25rem;
     }
-    .copy-btn {
-      position: absolute;
-      top: 8px;
-      right: 8px;
-      border: 1px solid #444;
-      background: #222;
-      color: #e6e6e6;
-      padding: 4px 8px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 0.85rem;
-    }
-    .copy-btn:focus-visible { outline: 2px solid #0d6efd; outline-offset: 2px; }
+    .guide code { color: #e6e6e6; }
   </style>
 </head>
 <body>
@@ -160,338 +88,244 @@
 
   <main class="wrap">
     <!-- ======================
-         LIVE DEMO CAROUSEL
+         LIVE CAROUSEL (simple)
          ====================== -->
-    <section class="unique-carousel"
-             aria-label="Endless Carousel of Items"
-             data-interval="1200"        <!-- ms between moves (default 1200) -->
-             data-transition="500"       <!-- ms animation (must match CSS transition) -->
-             data-pause-on-hover="true"  <!-- hover pauses autoplay -->
-             data-start-paused="false">  <!-- start in paused state -->
-      <div class="unique-carousel__container">
-        <div class="unique-carousel__track" aria-live="off">
-          <!-- Original items only; JS will clone the first N visible for seamless loop -->
-          <div class="unique-carousel__item"><div class="unique-card">1</div></div>
-          <div class="unique-carousel__item"><div class="unique-card">2</div></div>
-          <div class="unique-carousel__item"><div class="unique-card">3</div></div>
-          <div class="unique-carousel__item"><div class="unique-card">4</div></div>
-          <div class="unique-carousel__item"><div class="unique-card">5</div></div>
-          <div class="unique-carousel__item"><div class="unique-card">6</div></div>
-          <div class="unique-carousel__item"><div class="unique-card">7</div></div>
-          <div class="unique-carousel__item"><div class="unique-card">8</div></div>
-          <div class="unique-carousel__item"><div class="unique-card">9</div></div>
-          <div class="unique-carousel__item"><div class="unique-card">10</div></div>
-          <div class="unique-carousel__item"><div class="unique-card">11</div></div>
+    <section class="uc" aria-label="Endless Carousel">
+      <div class="uc__container">
+        <div class="uc__track" aria-live="off">
+          <!-- Original items only; JS will append clones -->
+          <div class="uc__item"><div class="uc-card">1</div></div>
+          <div class="uc__item"><div class="uc-card">2</div></div>
+          <div class="uc__item"><div class="uc-card">3</div></div>
+          <div class="uc__item"><div class="uc-card">4</div></div>
+          <div class="uc__item"><div class="uc-card">5</div></div>
+          <div class="uc__item"><div class="uc-card">6</div></div>
+          <div class="uc__item"><div class="uc-card">7</div></div>
+          <div class="uc__item"><div class="uc-card">8</div></div>
+          <div class="uc__item"><div class="uc-card">9</div></div>
+          <div class="uc__item"><div class="uc-card">10</div></div>
+          <div class="uc__item"><div class="uc-card">11</div></div>
         </div>
       </div>
 
-      <div class="unique-carousel__controls" aria-controls="carousel-controls">
-        <button type="button" class="unique-btn js-uc-toggle" aria-pressed="false" aria-label="Pause auto-scrolling">Pause</button>
+      <div class="uc__controls">
+        <button type="button" class="uc-btn uc-toggle" aria-pressed="false" aria-label="Pause auto-scrolling">Pause</button>
       </div>
 
       <p style="text-align:center;margin-top:0.75rem;color:#666;font-size:0.95rem;">
-        Auto-scrolling, seamless loop. Hover or press “Pause” to stop motion.
+        Auto-scrolling, seamless loop. Use “Pause” to stop motion.
       </p>
     </section>
 
     <!-- ======================
-         INSTALLATION GUIDE
+         INSTRUCTIONS (pure HTML)
          ====================== -->
     <section class="guide" aria-labelledby="guide-title">
       <h2 id="guide-title">How to Install This Carousel</h2>
       <ol>
-        <li><strong>Copy the HTML structure</strong> (items can be anything—logos, cards, links). Keep only your original items; the JS will append clones automatically.</li>
-        <div class="codeblock" id="snippet-html">
-          <button class="copy-btn" data-copy="#snippet-html">Copy</button>
-<pre>&lt;section class="unique-carousel" aria-label="Endless Carousel" data-interval="1200" data-transition="500" data-pause-on-hover="true"&gt;
-  &lt;div class="unique-carousel__container"&gt;
-    &lt;div class="unique-carousel__track" aria-live="off"&gt;
-      &lt;div class="unique-carousel__item"&gt;&lt;div class="unique-card"&gt;Item 1&lt;/div&gt;&lt;/div&gt;
-      &lt;div class="unique-carousel__item"&gt;&lt;div class="unique-card"&gt;Item 2&lt;/div&gt;&lt;/div&gt;
+        <li><strong>HTML structure</strong> — paste this where you want the carousel to appear:</li>
+        <pre><code>&lt;section class="uc" aria-label="Endless Carousel"&gt;
+  &lt;div class="uc__container"&gt;
+    &lt;div class="uc__track" aria-live="off"&gt;
+      &lt;div class="uc__item"&gt;&lt;div class="uc-card"&gt;Item 1&lt;/div&gt;&lt;/div&gt;
+      &lt;div class="uc__item"&gt;&lt;div class="uc-card"&gt;Item 2&lt;/div&gt;&lt;/div&gt;
       &lt;!-- ...add as many as you like (5+ recommended) --&gt;
     &lt;/div&gt;
   &lt;/div&gt;
-  &lt;div class="unique-carousel__controls"&gt;
-    &lt;button type="button" class="unique-btn js-uc-toggle" aria-pressed="false"&gt;Pause&lt;/button&gt;
+  &lt;div class="uc__controls"&gt;
+    &lt;button type="button" class="uc-btn uc-toggle" aria-pressed="false"&gt;Pause&lt;/button&gt;
   &lt;/div&gt;
-&lt;/section&gt;</pre>
-        </div>
+&lt;/section&gt;</code></pre>
 
-        <li><strong>Copy the CSS</strong> (scoped to <code>.unique-carousel</code> so it won’t fight Bootstrap). You can tweak gaps, borders, and breakpoints safely.</li>
-        <div class="codeblock" id="snippet-css">
-          <button class="copy-btn" data-copy="#snippet-css">Copy</button>
-<pre>/* Scoped carousel styles */
-.unique-carousel { --uc-gap: 12px; --uc-border: #ddd; --uc-radius: 12px; --uc-bg: #fafafa; }
-.unique-carousel__container { overflow: hidden; border: 1px solid var(--uc-border); border-radius: var(--uc-radius); background: var(--uc-bg); }
-.unique-carousel__track { display: flex; gap: var(--uc-gap); padding: var(--uc-gap); transition: transform 500ms ease-in-out; will-change: transform; }
-.unique-carousel__item { flex: 0 0 calc((100% - (var(--uc-gap) * 3)) / 4); }
-@media (max-width: 992px){ .unique-carousel__item { flex-basis: calc((100% - (var(--uc-gap) * 2)) / 3); } }
-@media (max-width: 768px){ .unique-carousel__item { flex-basis: calc((100% - var(--uc-gap)) / 2); } }
-@media (max-width: 576px){ .unique-carousel__item { flex-basis: 100%; } }</pre>
-        </div>
+        <li><strong>CSS (scoped)</strong> — add these rules to the page or your stylesheet:</li>
+        <pre><code>/* see this page's &lt;style&gt; for full version; keep class names the same */
+.uc { max-width: 960px; margin: 2rem auto; }
+.uc__container { overflow: hidden; border: 1px solid #ddd; border-radius: 12px; background: #fafafa; }
+.uc__track { display: flex; gap: 12px; padding: 12px; transition: transform 500ms ease-in-out; will-change: transform; }
+.uc__item { flex: 0 0 calc((100% - (12px * 3)) / 4); }
+@media (max-width: 992px){ .uc__item { flex-basis: calc((100% - (12px * 2)) / 3); } }
+@media (max-width: 768px){ .uc__item { flex-basis: calc((100% - 12px) / 2); } }
+@media (max-width: 576px){ .uc__item { flex-basis: 100%; } }</code></pre>
 
-        <li><strong>Copy the JavaScript</strong> (vanilla; handles cloning, autoplay, resize, play/pause, and reduced motion). Place it near the end of your page.</li>
-        <div class="codeblock" id="snippet-js">
-          <button class="copy-btn" data-copy="#snippet-js">Copy</button>
-<pre>(function(){
-  const root = document.querySelector('.unique-carousel');
+        <li><strong>JavaScript</strong> — place right before <code>&lt;/body&gt;</code> (editor must allow scripts on the page where the carousel lives):</li>
+        <pre><code>(function(){
+  var root = document.querySelector('.uc');
   if(!root) return;
 
-  const track = root.querySelector('.unique-carousel__track');
-  const container = root.querySelector('.unique-carousel__container');
-  const toggleBtn = root.querySelector('.js-uc-toggle');
+  var track = root.querySelector('.uc__track');
+  var container = root.querySelector('.uc__container');
+  var toggleBtn = root.querySelector('.uc-toggle');
 
-  const STEP_MS = Number(root.dataset.interval) || 1200;
-  const TRANSITION_MS = Number(root.dataset.transition) || 500;
-  const PAUSE_ON_HOVER = root.dataset.pauseOnHover !== 'false';
-  const START_PAUSED = root.dataset.startPaused === 'true';
-  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // === CONFIG (no data-attrs; edit here) ===
+  var STEP_MS = 1200;        // ms between moves
+  var TRANSITION_MS = 500;   // keep in sync with CSS transition
+  var PAUSE_ON_HOVER = true; // hover pauses autoplay
+  var MOVE_BY = 'page';      // 'page' to jump visible count, or number (1,2,...)
 
-  let currentIndex = 0;
-  let itemWidth = 0;
-  let visibleCount = 1;
-  let intervalId = null;
-  let isResetting = false;
+  var reduceMotion = false;
+  try { reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch(e){}
 
-  // Mark original items for reliable recloning on resize
-  const originals = Array.from(track.children).map(el => { el.dataset.original = '1'; return el; });
+  var originals = Array.prototype.slice.call(track.children).map(function(el){ el.setAttribute('data-original','1'); return el; });
+  var currentIndex = 0, itemWidth = 0, visibleCount = 1, intervalId = null, isResetting = false;
 
   function measureItemWidth(){
-    const first = track.querySelector('.unique-carousel__item');
+    var first = track.querySelector('.uc__item');
     return first ? first.getBoundingClientRect().width : 0;
   }
-
   function computeVisibleCount(){
-    const w = container.clientWidth;
-    const iw = itemWidth || measureItemWidth();
+    var w = container.clientWidth;
+    var iw = itemWidth || measureItemWidth();
     if(!iw) return 1;
-    const raw = Math.max(1, Math.round(w / iw));
-    // Clamp between 1 and originals.length
+    var raw = Math.max(1, Math.round(w / iw));
     return Math.max(1, Math.min(raw, originals.length));
   }
-
-  function setTransform(px){ track.style.transform = 'translateX(-'+px+'px)'; }
-
-  function ensureClones(count){
-    // Remove existing clones
-    Array.from(track.querySelectorAll('[data-clone="1"]')).forEach(n => n.remove());
-    // Clone first 'count' originals
-    const toClone = originals.slice(0, count).map(n => {
-      const c = n.cloneNode(true);
-      c.dataset.clone = '1';
-      return c;
-    });
-    toClone.forEach(c => track.appendChild(c));
+  function setTransform(px){ track.style.transform = 'translateX(-' + px + 'px)'; }
+  function moveBy(){
+    if (MOVE_BY === 'page') return visibleCount;
+    var n = Number(MOVE_BY);
+    return (isFinite(n) && n > 0) ? Math.floor(n) : 1;
   }
-
-  function totalItems(){ return track.children.length; }
-
-  function lastRealIndex(){ return totalItems() - visibleCount; }
+  function ensureClones(){
+    Array.prototype.slice.call(track.querySelectorAll('[data-clone="1"]')).forEach(function(n){ n.remove(); });
+    var needed = visibleCount + (moveBy() - 1);
+    originals.slice(0, needed).forEach(function(n){
+      var c = n.cloneNode(true);
+      c.setAttribute('data-clone','1');
+      track.appendChild(c);
+    });
+  }
+  function maxRealStartIndex(){ return originals.length - visibleCount; }
 
   function step(){
     if(isResetting) return;
-    currentIndex += 1;
-
-    if(currentIndex > lastRealIndex()){
-      // Animate into clone zone
+    currentIndex += moveBy();
+    if(currentIndex > maxRealStartIndex()){
       setTransform(currentIndex * itemWidth);
-
       isResetting = true;
-      setTimeout(() => {
-        // Instant jump back to 0 without flicker
-        const prev = track.style.transition;
+      setTimeout(function(){
+        var prev = track.style.transition;
         track.style.transition = 'none';
         currentIndex = 0;
         setTransform(0);
-        // Restore transition
-        requestAnimationFrame(() => {
-          track.style.transition = 'transform '+TRANSITION_MS+'ms ease-in-out';
-          isResetting = false;
-        });
+        setTimeout(function(){ track.style.transition = 'transform ' + TRANSITION_MS + 'ms ease-in-out'; isResetting = false; }, 50);
       }, TRANSITION_MS);
     } else {
       setTransform(currentIndex * itemWidth);
     }
   }
-
   function start(){
     stop();
-    if(reduceMotion) return; // honor user setting
+    if(reduceMotion) return;
     intervalId = setInterval(step, STEP_MS);
-    if(toggleBtn){
-      toggleBtn.setAttribute('aria-pressed','false');
-      toggleBtn.textContent = 'Pause';
-      toggleBtn.setAttribute('aria-label','Pause auto-scrolling');
-    }
+    if(toggleBtn){ toggleBtn.setAttribute('aria-pressed','false'); toggleBtn.textContent = 'Pause'; toggleBtn.setAttribute('aria-label','Pause auto-scrolling'); }
   }
-
   function stop(){
     if(intervalId){ clearInterval(intervalId); intervalId = null; }
-    if(toggleBtn){
-      toggleBtn.setAttribute('aria-pressed','true');
-      toggleBtn.textContent = 'Play';
-      toggleBtn.setAttribute('aria-label','Resume auto-scrolling');
-    }
+    if(toggleBtn){ toggleBtn.setAttribute('aria-pressed','true'); toggleBtn.textContent = 'Play'; toggleBtn.setAttribute('aria-label','Resume auto-scrolling'); }
   }
-
   function layout(){
-    // Keep transition consistent with config
-    track.style.transition = 'transform '+TRANSITION_MS+'ms ease-in-out';
-
-    // Measure after layout
+    track.style.transition = 'transform ' + TRANSITION_MS + 'ms ease-in-out';
     itemWidth = measureItemWidth();
-
-    // Recompute visible count and refresh clones
-    const newVisible = computeVisibleCount();
-    if(newVisible !== visibleCount){
-      visibleCount = newVisible;
-      ensureClones(visibleCount);
-    } else if(!track.querySelector('[data-clone="1"]')) {
-      // First run: ensure clones exist
-      ensureClones(visibleCount);
-    }
-
-    // Snap to current index without animation
-    const prev = track.style.transition;
+    var newVisible = computeVisibleCount();
+    if(newVisible !== visibleCount){ visibleCount = newVisible; ensureClones(); }
+    else if(!track.querySelector('[data-clone="1"]')) { ensureClones(); }
+    var prev = track.style.transition;
     track.style.transition = 'none';
     setTransform(currentIndex * itemWidth);
-    // Restore transition on next frame
-    requestAnimationFrame(() => { track.style.transition = prev; });
+    setTimeout(function(){ track.style.transition = prev; }, 0);
   }
+  function debounce(fn, ms){ var t; return function(){ var a = arguments; clearTimeout(t); t = setTimeout(function(){ fn.apply(null, a); }, ms); }; }
 
-  // Debounce helper
-  function debounce(fn, ms){
-    let t; return (...args) => { clearTimeout(t); t = setTimeout(() => fn.apply(null,args), ms); };
-  }
-
-  // Init after fonts & layout settle
-  window.addEventListener('load', () => {
+  window.addEventListener('load', function(){
     layout();
     visibleCount = computeVisibleCount();
-    ensureClones(visibleCount);
-    if(START_PAUSED) stop(); else start();
+    ensureClones();
+    start();
   });
-
-  // Hover pause/resume
   if(PAUSE_ON_HOVER){
     container.addEventListener('mouseenter', stop);
     container.addEventListener('mouseleave', start);
   }
-
-  // Toggle button (Play/Pause)
-  if(toggleBtn){
-    toggleBtn.addEventListener('click', () => {
-      if(intervalId) stop(); else start();
-    });
-  }
-
-  // Visibility pause (saves cycles, avoids jumps)
-  document.addEventListener('visibilitychange', () => {
-    if(document.hidden) stop(); else start();
-  });
-
-  // Responsive relayout
-  window.addEventListener('resize', debounce(() => {
-    const prevV = visibleCount;
+  if(toggleBtn){ toggleBtn.addEventListener('click', function(){ intervalId ? stop() : start(); }); }
+  document.addEventListener('visibilitychange', function(){ document.hidden ? stop() : start(); });
+  window.addEventListener('resize', debounce(function(){
+    var prevV = visibleCount;
     layout();
-    // If visibleCount changed, keep currentIndex sane
     if(visibleCount !== prevV){
       currentIndex = currentIndex % originals.length;
-      const prev = track.style.transition;
+      var prev = track.style.transition;
       track.style.transition = 'none';
       setTransform(currentIndex * itemWidth);
-      requestAnimationFrame(() => { track.style.transition = prev; });
+      setTimeout(function(){ track.style.transition = prev; }, 0);
     }
   }, 150));
-})();</pre>
-        </div>
+})();</code></pre>
 
-        <li><strong>Optional: change behavior via data attributes</strong> on <code>.unique-carousel</code>:
+        <li><strong>Tuning</strong> — Edit the JS constants only:
           <ul>
-            <li><code>data-interval</code> — milliseconds between moves (default <code>1200</code>).</li>
-            <li><code>data-transition</code> — animation ms (must match CSS transition, default <code>500</code>).</li>
-            <li><code>data-pause-on-hover</code> — <code>true</code> or <code>false</code> (default <code>true</code>).</li>
-            <li><code>data-start-paused</code> — <code>true</code> starts stopped for demos/reviews.</li>
+            <li><code>STEP_MS</code> — time between moves.</li>
+            <li><code>TRANSITION_MS</code> — must match the CSS transition duration.</li>
+            <li><code>PAUSE_ON_HOVER</code> — <code>true</code> or <code>false</code>.</li>
+            <li><code>MOVE_BY</code> — <code>'page'</code> for full-viewport jumps (classic feel), or a number (e.g., <code>1</code>, <code>2</code>).</li>
           </ul>
         </li>
-
-        <li><strong>Swap the demo cards</strong> for your real content (logos, links, images). The component doesn’t rely on Bootstrap grids or utilities, so it will behave the same anywhere.</li>
       </ol>
     </section>
   </main>
 
   <div data-include="/partials/footer.html"></div>
 
-  <!-- Include loader -->
-  <script src="/assets/js/include.js"></script>
   <!-- Main loader -->
   <script src="/assets/js/main.js"></script>
 
-  <!-- Carousel logic for THIS page (already included in the copy block above). 
-       Keeping it inline here so this page works standalone. -->
+  <!-- Carousel logic (working area only; instructions above are script-free) -->
   <script>
-    /* ==== Live demo bootstrapper (same code as in the JS snippet) ==== */
+    /* The same JS as in the instructions block above, kept inline so this page runs standalone. */
     (function(){
-      const root = document.querySelector('.unique-carousel');
+      var root = document.querySelector('.uc');
       if(!root) return;
 
-      const track = root.querySelector('.unique-carousel__track');
-      const container = root.querySelector('.unique-carousel__container');
-      const toggleBtn = root.querySelector('.js-uc-toggle');
+      var track = root.querySelector('.uc__track');
+      var container = root.querySelector('.uc__container');
+      var toggleBtn = root.querySelector('.uc-toggle');
 
-      const STEP_MS = Number(root.dataset.interval) || 1200;
-      const TRANSITION_MS = Number(root.dataset.transition) || 500;
-      const PAUSE_ON_HOVER = root.dataset.pauseOnHover !== 'false';
-      const START_PAUSED = root.dataset.startPaused === 'true';
-      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      var STEP_MS = 1200;
+      var TRANSITION_MS = 500;
+      var PAUSE_ON_HOVER = true;
+      var MOVE_BY = 'page';
 
-      let currentIndex = 0;
-      let itemWidth = 0;
-      let visibleCount = 1;
-      let intervalId = null;
-      let isResetting = false;
+      var reduceMotion = false;
+      try { reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch(e){}
 
-      const originals = Array.from(track.children).map(el => { el.dataset.original = '1'; return el; });
+      var originals = Array.prototype.slice.call(track.children).map(function(el){ el.setAttribute('data-original','1'); return el; });
+      var currentIndex = 0, itemWidth = 0, visibleCount = 1, intervalId = null, isResetting = false;
 
-      function measureItemWidth(){
-        const first = track.querySelector('.unique-carousel__item');
-        return first ? first.getBoundingClientRect().width : 0;
-      }
-      function computeVisibleCount(){
-        const w = container.clientWidth;
-        const iw = itemWidth || measureItemWidth();
-        if(!iw) return 1;
-        const raw = Math.max(1, Math.round(w / iw));
-        return Math.max(1, Math.min(raw, originals.length));
-      }
-      function setTransform(px){ track.style.transform = 'translateX(-'+px+'px)'; }
-      function ensureClones(count){
-        Array.from(track.querySelectorAll('[data-clone="1"]')).forEach(n => n.remove());
-        const toClone = originals.slice(0, count).map(n => {
-          const c = n.cloneNode(true);
-          c.dataset.clone = '1';
-          return c;
+      function measureItemWidth(){ var first = track.querySelector('.uc__item'); return first ? first.getBoundingClientRect().width : 0; }
+      function computeVisibleCount(){ var w = container.clientWidth; var iw = itemWidth || measureItemWidth(); if(!iw) return 1; var raw = Math.max(1, Math.round(w / iw)); return Math.max(1, Math.min(raw, originals.length)); }
+      function setTransform(px){ track.style.transform = 'translateX(-' + px + 'px)'; }
+      function moveBy(){ if (MOVE_BY === 'page') return visibleCount; var n = Number(MOVE_BY); return (isFinite(n) && n > 0) ? Math.floor(n) : 1; }
+      function ensureClones(){
+        Array.prototype.slice.call(track.querySelectorAll('[data-clone="1"]')).forEach(function(n){ n.remove(); });
+        var needed = visibleCount + (moveBy() - 1);
+        originals.slice(0, needed).forEach(function(n){
+          var c = n.cloneNode(true);
+          c.setAttribute('data-clone','1');
+          track.appendChild(c);
         });
-        toClone.forEach(c => track.appendChild(c));
       }
-      function totalItems(){ return track.children.length; }
-      function lastRealIndex(){ return totalItems() - visibleCount; }
-
+      function maxRealStartIndex(){ return originals.length - visibleCount; }
       function step(){
         if(isResetting) return;
-        currentIndex += 1;
-        if(currentIndex > lastRealIndex()){
+        currentIndex += moveBy();
+        if(currentIndex > maxRealStartIndex()){
           setTransform(currentIndex * itemWidth);
           isResetting = true;
-          setTimeout(() => {
-            const prev = track.style.transition;
+          setTimeout(function(){
+            var prev = track.style.transition;
             track.style.transition = 'none';
             currentIndex = 0;
             setTransform(0);
-            requestAnimationFrame(() => {
-              track.style.transition = 'transform '+TRANSITION_MS+'ms ease-in-out';
-              isResetting = false;
-            });
+            setTimeout(function(){ track.style.transition = 'transform ' + TRANSITION_MS + 'ms ease-in-out'; isResetting = false; }, 50);
           }, TRANSITION_MS);
         } else {
           setTransform(currentIndex * itemWidth);
@@ -501,81 +335,40 @@
         stop();
         if(reduceMotion) return;
         intervalId = setInterval(step, STEP_MS);
-        if(toggleBtn){
-          toggleBtn.setAttribute('aria-pressed','false');
-          toggleBtn.textContent = 'Pause';
-          toggleBtn.setAttribute('aria-label','Pause auto-scrolling');
-        }
+        if(toggleBtn){ toggleBtn.setAttribute('aria-pressed','false'); toggleBtn.textContent = 'Pause'; toggleBtn.setAttribute('aria-label','Pause auto-scrolling'); }
       }
       function stop(){
         if(intervalId){ clearInterval(intervalId); intervalId = null; }
-        if(toggleBtn){
-          toggleBtn.setAttribute('aria-pressed','true');
-          toggleBtn.textContent = 'Play';
-          toggleBtn.setAttribute('aria-label','Resume auto-scrolling');
-        }
+        if(toggleBtn){ toggleBtn.setAttribute('aria-pressed','true'); toggleBtn.textContent = 'Play'; toggleBtn.setAttribute('aria-label','Resume auto-scrolling'); }
       }
       function layout(){
-        track.style.transition = 'transform '+TRANSITION_MS+'ms ease-in-out';
+        track.style.transition = 'transform ' + TRANSITION_MS + 'ms ease-in-out';
         itemWidth = measureItemWidth();
-        const newVisible = computeVisibleCount();
-        if(newVisible !== visibleCount){
-          visibleCount = newVisible;
-          ensureClones(visibleCount);
-        } else if(!track.querySelector('[data-clone="1"]')) {
-          ensureClones(visibleCount);
-        }
-        const prev = track.style.transition;
+        var newVisible = computeVisibleCount();
+        if(newVisible !== visibleCount){ visibleCount = newVisible; ensureClones(); }
+        else if(!track.querySelector('[data-clone="1"]')) { ensureClones(); }
+        var prev = track.style.transition;
         track.style.transition = 'none';
         setTransform(currentIndex * itemWidth);
-        requestAnimationFrame(() => { track.style.transition = prev; });
+        setTimeout(function(){ track.style.transition = prev; }, 0);
       }
-      function debounce(fn, ms){ let t; return (...a)=>{ clearTimeout(t); t=setTimeout(()=>fn.apply(null,a),ms); }; }
+      function debounce(fn, ms){ var t; return function(){ var a = arguments; clearTimeout(t); t = setTimeout(function(){ fn.apply(null, a); }, ms); }; }
 
-      window.addEventListener('load', () => {
-        layout();
-        visibleCount = computeVisibleCount();
-        ensureClones(visibleCount);
-        if(START_PAUSED) stop(); else start();
-      });
-
-      if(PAUSE_ON_HOVER){
-        container.addEventListener('mouseenter', stop);
-        container.addEventListener('mouseleave', start);
-      }
-      if(toggleBtn){
-        toggleBtn.addEventListener('click', () => { if(intervalId) stop(); else start(); });
-      }
-      document.addEventListener('visibilitychange', () => { if(document.hidden) stop(); else start(); });
-      window.addEventListener('resize', debounce(() => {
-        const prevV = visibleCount;
+      window.addEventListener('load', function(){ layout(); visibleCount = computeVisibleCount(); ensureClones(); start(); });
+      if(PAUSE_ON_HOVER){ container.addEventListener('mouseenter', stop); container.addEventListener('mouseleave', start); }
+      if(toggleBtn){ toggleBtn.addEventListener('click', function(){ intervalId ? stop() : start(); }); }
+      document.addEventListener('visibilitychange', function(){ document.hidden ? stop() : start(); });
+      window.addEventListener('resize', debounce(function(){
+        var prevV = visibleCount;
         layout();
         if(visibleCount !== prevV){
           currentIndex = currentIndex % originals.length;
-          const prev = track.style.transition;
+          var prev = track.style.transition;
           track.style.transition = 'none';
           setTransform(currentIndex * itemWidth);
-          requestAnimationFrame(() => { track.style.transition = prev; });
+          setTimeout(function(){ track.style.transition = prev; }, 0);
         }
       }, 150));
-    })();
-
-    /* === Tiny helper: "Copy" buttons for code blocks in the guide === */
-    (function(){
-      function copy(sel){
-        const block = document.querySelector(sel);
-        if(!block) return;
-        const text = block.querySelector('pre')?.innerText || '';
-        navigator.clipboard.writeText(text);
-      }
-      document.addEventListener('click', (e) => {
-        const btn = e.target.closest('[data-copy]');
-        if(!btn) return;
-        e.preventDefault();
-        copy(btn.getAttribute('data-copy'));
-        btn.textContent = 'Copied';
-        setTimeout(()=> btn.textContent = 'Copy', 1200);
-      });
     })();
   </script>
 </body>
