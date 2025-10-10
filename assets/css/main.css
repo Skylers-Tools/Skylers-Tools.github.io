@@ -1,12 +1,13 @@
 /* ========== Skyler's Tools — Global Styles ========== */
 
 :root {
-  --bg: #f5f6fa;
+  --bg: #ffffff;
   --text: #2f3640;
   --card-bg: #ffffff;
-  --accent1: #6a11cb;
-  --accent2: #2575fc;
-  --footer-bg: #dcdde1;
+  --accent1: #102c50;
+  --accent2: #8f568f;
+  --accent3: #84b0d5;
+  --footer-bg: #cccccc;
   --shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   --radius: 10px;
 }
@@ -34,7 +35,7 @@ html, body {
 /* ----- Header (supports legacy + camelCase) ----- */
 .site-header,
 .siteHeader {
-  background: linear-gradient(135deg, var(--accent1), var(--accent2));
+  background: linear-gradient(135deg, var(--accent1), var(--accent2), var(--accent3));
   color: #fff;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
