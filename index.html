@@ -14,10 +14,33 @@
   <!-- Global header -->
   <div data-include="/partials/header.html"></div>
 
-  <main class="wrap">
-    <div class="col-sm-12"><h1>Here's a header!</h1><br><br><p>I am some paragraph text</p>
+  <!-- You can keep .wrap for your site max-width, or switch to Bootstrap's .container -->
+  <main class="container">
+
+    <!-- Full-width (at sm and up) header/content row -->
+    <div class="row">
+      <div class="col-12">
+        <h1 class="mb-3">Here's a header!</h1>
+        <p class="mb-4">I am some paragraph text</p>
+      </div>
     </div>
-    <div class="col-sm-12"><div class="col-sm-4"><h2>Header</h2><p>Text</p></div><div class="col-sm-4"><h2>Header</h2><p>Text</p></div><div class="col-sm-4"><h2>Header</h2><p>Text</p></div></div>
+
+    <!-- Three columns on sm+; stack on xs -->
+    <div class="row g-4">
+      <div class="col-12 col-sm-4">
+        <h2>Header</h2>
+        <p>Text</p>
+      </div>
+      <div class="col-12 col-sm-4">
+        <h2>Header</h2>
+        <p>Text</p>
+      </div>
+      <div class="col-12 col-sm-4">
+        <h2>Header</h2>
+        <p>Text</p>
+      </div>
+    </div>
+
   </main>
 
   <!-- Global footer -->
