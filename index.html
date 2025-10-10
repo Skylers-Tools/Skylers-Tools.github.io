@@ -3,47 +3,27 @@
 <head>
   <title>Skyler's Tools</title>
   <meta name="description" content="A collection of personal projects, utilities, and web tools built for fun and productivity.">
-  <meta data-include="/partials/head.html"></meta>
+
+  <!-- Load head partial (Bootstrap, FA, main.css) -->
+  <meta data-include="/partials/head.html" />
+
+  <!-- Include loader EARLY so the head partial is injected before DOMContentLoaded -->
+  <script defer src="/assets/js/include.js"></script>
 </head>
 <body>
   <!-- Global header -->
   <div data-include="/partials/header.html"></div>
 
   <main class="wrap">
-    <section id="about" class="card">
-      <h2>About</h2>
-      <p>
-        Welcome to <strong>Skyler's Tools</strong> — a collection of personal projects, utilities, and web tools built for fun and productivity.
-        This site will evolve as new ideas take shape!
-      </p>
-    </section>
-
-    <section id="projects" class="card">
-      <h2>Projects</h2>
-      <ul>
-        <li><strong>Text Formatter:</strong> Quickly clean and style your text snippets. <a href="/tools/text-formatter.html">Try it →</a></li>
-        <li><strong>Dice Roller:</strong> A D&D-inspired tool for rolling dice online. <a href="/tools/dice-roller.html">Try it →</a></li>
-        <li><strong>Side-by-Side Tool:</strong> Compare two text blocks side-by-side. <a href="/pages/tools/side-by-side.html">Try it →</a></li>
-        <li><strong>Link Shortener:</strong> Simple self-hosted shortener (coming soon!).</li>
-      </ul>
-    </section>
-
-    <section id="contact" class="card">
-      <h2>Contact</h2>
-      <p>
-        Have feedback or want to collaborate? Reach out on 
-        <a href="https://github.com/Skylers-Tools" target="_blank">GitHub</a> 
-        or connect with me on social media.
-      </p>
-    </section>
+    <div class="col-sm-12"><h1>Here's a header!</h1><br><br><p>I am some paragraph text</p>
+    </div>
+    <div class="col-sm-12"><div class="col-sm-4"><h2>Header</h2><p>Text</p></div><div class="col-sm-4"><h2>Header</h2><p>Text</p></div><div class="col-sm-4"><h2>Header</h2><p>Text</p></div></div>
   </main>
 
   <!-- Global footer -->
   <div data-include="/partials/footer.html"></div>
 
-  <!-- Include loader -->
-  <script src="/assets/js/include.js"></script>
-  <!-- Main loader -->
-<script src="/assets/js/main.js"></script>
+  <!-- Main site JS (after content) -->
+  <script src="/assets/js/main.js"></script>
 </body>
 </html>
